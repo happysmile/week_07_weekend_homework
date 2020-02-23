@@ -8,7 +8,7 @@
       <option value="species">Species</option>
       <option value="vehicles">Vehicle</option>
     </select>
-    <input type="text" v-on:input="filterFilms(films)" v-model="search.text" placeholder="Search film">
+    <input type="text" v-on:input="filterFilms" v-model="search.text" placeholder="Search film">
   </div>
 </template>
 
@@ -28,32 +28,30 @@ export default {
   },
   methods: {
     peoplePerFilm(film) {
-      if(film.people!=null){
-        return this.people.filter((person) => person.url.includes(film.people));
+      if(film.people.length>0){
+        return this.people.filter((person) => film.people.includes(person.url));
       }
     },
     locationsPerFilm(film) {
-      if(film.locations!=null){
-        return this.locations.filter((location) => location.url.includes(film.locations));
+      if(film.locations.length>0){
+        return this.locations.filter((location) => film.locations.includes(location.url));
       }
     },
     speciesPerFilm(film) {
-      if(film.species!=null){
-        return this.species.filter((specie) => specie.url.includes(film.species));
+      if(film.species.length>0){
+        return this.species.filter((specie) => film.species.includes(specie.url));
       }
     },
     vehiclesPerFilm(film) {
-      if(film.vehicles!=null){
-        return this.vehicles.filter((vehicle) => vehicle.url.includes(film.vehicles));
+      if(film.vehicles.length>0){
+        return this.vehicles.filter((vehicle) => film.vehicles.includes(vehicles.url));
       }
     },
 
-    filterFilms(films) {
-      // this.search.results = films.filter(film => film.title.toLowerCase().includes(this.search.text.toLowerCase()));
-      // eventBus.$emit('film-searched', this.search.results);
-      this.search.results = films.filter((film) => {
-        // title and director search parameters are simple strings
-        // but people, locations, species and vehicles are arrays!
+    filterFilms() {
+      this.search.results = this.films.filter((film) => {
+        // film.title and film.director are simple strings
+        // but film.people, film.locations, film.species and film.vehicles are arrays!
         if(Array.isArray(film[this.search.parameter])){
           // the array items are urls of people, locations, vehicles and species
           // must be converted into strings of their names
@@ -74,7 +72,7 @@ export default {
               break;
           }
           const arrayOfLowerCaseNames = arrayToSearch.map((item) => item.name.toLowerCase());
-          return arrayOfLowerCaseNames.includes(this.search.text.toLowerCase());
+          return arrayOfLowerCaseNames.filter( (item) => item.includes(this.search.text.toLowerCase()));
         } else {
           return film[this.search.parameter].toLowerCase().includes(this.search.text.toLowerCase());
         }
